@@ -29,9 +29,15 @@ export default function LoginPage() {
     try {
       await entrar(email, senha);
       router.push("/dashboard");
-    } catch {
-      // 🐛 BUG 01 — catch vazio: o erro é silenciado.
-      // O usuário não sabe o que aconteceu. Adicione: setErro("E-mail ou senha inválidos.")
+    } catch (err) {
+      const codigo = err instanceof Error ? err.message : "";
+      if (codigo.includes("invalid-credential") || codigo.includes("wrong-password")) {
+        setErro("E-mail ou senha incorretos.");
+      } else if (codigo.includes("user-not-found")) {
+        setErro("Nenhuma conta encontrada com este e-mail.");
+      } else {
+        setErro("Erro ao entrar. Tente novamente.");
+      }
     } finally {
       setCarregando(false);
     }
