@@ -27,10 +27,17 @@ service cloud.firestore {
     // Com essas regras: usuário só pode ler/editar/deletar documentos onde
     // resource.data.userId == uid do usuário logado (request.auth.uid).
     // ---------------------------------------------------------------------------
-
-    // 🐛 BUG 08 — rules abertas: qualquer um pode fazer qualquer coisa
-    match /{document=**} {
-      allow read, write: if true;
+    //oi
+    match /personagens/{personagemId} {
+      allow read: if request.auth != null &&
+                  request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null &&
+                    request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null &&
+                    request.auth.uid == resource.data.userId &&
+                    request.auth.uid == request.resource.data.userId;
+      allow delete: if request.auth != null &&
+                    request.auth.uid == resource.data.userId;
     }
   }
 }
